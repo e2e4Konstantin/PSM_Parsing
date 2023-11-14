@@ -4,7 +4,7 @@ from icecream import ic
 import re
 
 from db.sql_queries import create_table, insert_query
-from excel_tools import get_data_from_excel
+from excel_tools import get_data_items_from_excel
 from files_tolls import output_message_exit
 
 
@@ -32,21 +32,28 @@ def create_db(path_db: str):
 #         print('ошибка вставки:', err)
 #
 #
-def insert_multiple_db(path_db: str, data_set: list = None):
+def insert_multiple_db(path_db: str, data_set: list = None) -> int:
     try:
         with sqlite3.connect(path_db) as connection:
             cursor = connection.executemany(insert_query["insert_raw_parsers"], data_set)
-            ic(cursor.rowcount)
+            result = cursor.rowcount
             connection.commit()
+            return result
     except (sqlite3.OperationalError, sqlite3.IntegrityError) as err:
         connection.rollback()
-        print('ошибка вставки данных в БД:', err)
+        output_message_exit('ошибка вставки данных в БД:', err)
 
 
 
+# ef = ['10-03-01-01-06-02.xlsx', '10-06-02-01-06-08.xlsx', '10-08-09-05-06-03.xlsx', '10-08-11-05-06-01.xlsx', '10-06-01-01-06-14.xlsx', ]
+# data_files = [os.path.join(src_data_path, file) for file in ef]
 
 def read_data(src_data_path: str, db_file_name: str)-> bool:
-    xlsx_mask = re.compile(r"[^~].*[\d+]((\d+-){4}).*\.xlsx")
+    """ Создает список файлов с данными по маске 'dd-dd-dd-dd-dd-dd.xlsx'.
+        Проходит по всем файлам, читает данные и заносит в БД.
+     """
+    # xlsx_mask = re.compile(r"[^~].*[\d+]((\d+-){4}).*\.xlsx")
+    xlsx_mask = re.compile(r".*\.xlsx")
     data_files = [os.path.join(src_data_path, file)
                   for file in os.listdir(src_data_path)
                   if xlsx_mask.match(file)]
@@ -54,9 +61,9 @@ def read_data(src_data_path: str, db_file_name: str)-> bool:
         ic(data_files)
         create_db(db_file_name)
         for file in data_files:
-            data_set = get_data_from_excel(file)
-            insert_multiple_db(db_file_name, data_set)
-            # ic(data_set)
+            data_set = get_data_items_from_excel(file)
+            count = insert_multiple_db(db_file_name, data_set)
+            ic(os.path.basename(file), count)
         return True
     else:
         output_message_exit(f"Фалы с данными не найдены", f"{src_data_path!r}")

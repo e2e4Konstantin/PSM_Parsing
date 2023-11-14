@@ -1,3 +1,4 @@
-from excel_tools.get_data_from_excel import get_data_from_excel
+# from excel_tools.get_data_from_excel import get_data_from_excel
+from excel_tools.get_data_from_excel import get_data_items_from_excel
 from excel_tools.write_excel_file import write_excel_file
 
