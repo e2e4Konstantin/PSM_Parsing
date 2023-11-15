@@ -118,11 +118,11 @@ def get_data_items_from_excel(file_name: str) -> list[tuple]:
             if limits:
                 base_file_name = os.path.basename(file_name)
                 for row in range(limits[0]+1, limits[1]+1):
-                    result.append(_get_data_line(sheet, row)+(base_file_name, row))
+                    result.append(_get_data_line(sheet, row)+(base_file_name, row,))
             else:
                 output_message(f"В excel файле: {file_name!r} на страницы: {sheet.title!r}", "нет таблицы с данными")
         else:
-            output_message(f"В excel файле: {file_name!r}", f"нет страницы: {book.sheets}")
+            output_message(f"В excel файле: {file_name!r}", f"нет страницы: {book.sheetnames}")
         book.close()
         return result
     except IOError as err:

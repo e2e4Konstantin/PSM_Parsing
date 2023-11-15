@@ -1,13 +1,11 @@
-
 from openpyxl.worksheet import worksheet
 from openpyxl.utils.cell import column_index_from_string
 from openpyxl.styles import DEFAULT_FONT
 import openpyxl
 
-from db.get_data_db import get_data_db, get_db_data_with_header
+from db.get_data_db import get_data_db, get_db_data_with_header, get_statistics_data
 from files_tolls import output_message_exit, file_unused
 from db.sql_queries import select_query
-
 
 
 def _basic_header_output(sheet: worksheet):
@@ -41,14 +39,24 @@ def _data_line_output(sheet: worksheet, src_data: tuple, start_row: int) -> int:
 
 
 def _statistics_line_output(sheet: worksheet, src_data: tuple, start_row: int) -> int:
-    sheet.cell(row=start_row, column=column_index_from_string('A')).value = src_data[0]
-    sheet.cell(row=start_row, column=column_index_from_string('B')).value = src_data[1]
-    sheet.cell(row=start_row, column=column_index_from_string('C')).value = src_data[2]
-    sheet.cell(row=start_row, column=column_index_from_string('D')).value = src_data[3]
-    sheet.cell(row=start_row, column=column_index_from_string('E')).value = src_data[4]
-    sheet.cell(row=start_row, column=column_index_from_string('F')).value = src_data[5]
-    sheet.cell(row=start_row, column=column_index_from_string('G')).value = src_data[6]
-    sheet.cell(row=start_row, column=column_index_from_string('H')).value = src_data[7]
+    length_data = len(src_data)
+    # start = ord('A'.upper())
+    # column_letter = [chr(x) for x in range(start, start+length_data, 1)]
+    for i in range(length_data):
+        if isinstance(src_data[i], int):
+            data = src_data[i] if src_data[i] > 0 else ""
+        else:
+            data = src_data[i]
+        sheet.cell(row=start_row, column=i+1).value = data
+
+    # sheet.cell(row=start_row, column=column_index_from_string('A')).value = src_data[0]
+    # sheet.cell(row=start_row, column=column_index_from_string('B')).value = src_data[1]
+    # sheet.cell(row=start_row, column=column_index_from_string('C')).value = src_data[2]
+    # sheet.cell(row=start_row, column=column_index_from_string('D')).value = src_data[3]
+    # sheet.cell(row=start_row, column=column_index_from_string('E')).value = src_data[4]
+    # sheet.cell(row=start_row, column=column_index_from_string('F')).value = src_data[5]
+    # sheet.cell(row=start_row, column=column_index_from_string('G')).value = src_data[6]
+    # sheet.cell(row=start_row, column=column_index_from_string('H')).value = src_data[7]
 
     return 1
 
@@ -60,7 +68,7 @@ def write_excel_file(excel_file_name: str, path_db: str):
             book = openpyxl.Workbook()
             DEFAULT_FONT.font = "Calibri"
             DEFAULT_FONT.sz = 8
-            sheet = book.active # получить ссылку на активную книгу
+            sheet = book.active  # получить ссылку на активную книгу
             sheet.title = "data P6"
             book.create_sheet("all")
             book.create_sheet("stat")
@@ -86,23 +94,19 @@ def write_excel_file(excel_file_name: str, path_db: str):
                 x += _data_line_output(sheet_all, row[1:], x)
 
         # получить статистику
-        data_set = get_db_data_with_header(path_db, select_query["select_count_P_raw_parsers"])
+        # data_set = get_db_data_with_header(path_db, select_query["select_count_P_raw_parsers"])
+        data_set = get_statistics_data(path_db)
         if data_set:
             sheet_all = book["stat"]
             x = 4
             for row in data_set:
                 x += _statistics_line_output(sheet_all, row, x)
 
-
         if book:
             book.save(excel_file_name)
             book.close()
     else:
         output_message_exit(f"Файл занят другим приложением: ", f"{excel_file_name!r}")
-
-
-
-
 
 
 if __name__ == "__main__":

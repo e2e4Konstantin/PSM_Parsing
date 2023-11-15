@@ -52,8 +52,8 @@ def read_data(src_data_path: str, db_file_name: str)-> bool:
     """ Создает список файлов с данными по маске 'dd-dd-dd-dd-dd-dd.xlsx'.
         Проходит по всем файлам, читает данные и заносит в БД.
      """
-    # xlsx_mask = re.compile(r"[^~].*[\d+]((\d+-){4}).*\.xlsx")
-    xlsx_mask = re.compile(r".*\.xlsx")
+    xlsx_mask = re.compile(r"[^~].*[\d+]((\d+-){4}).*\.xlsx")
+    # xlsx_mask = re.compile(r".*\.xlsx")
     data_files = [os.path.join(src_data_path, file)
                   for file in os.listdir(src_data_path)
                   if xlsx_mask.match(file)]

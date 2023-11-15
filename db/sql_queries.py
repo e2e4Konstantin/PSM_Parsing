@@ -97,13 +97,24 @@ select_query = {
         GROUP BY file_name;    
     """,
 
+    "select_unic_criteria": """
+        SELECT DISTINCT criteria 
+        FROM tblRawParsers
+        WHERE criteria LIKE 'С%' OR criteria LIKE 'Р%';
+        --ORDER BY criteria;
+    """,
 }
 
 # -- SELECT file_name, count(file_name) AS 'счетчик Р6' FROM tblRawParsers WHERE criteria is 'Р6' GROUP BY file_name;
 #
 # -- SELECT file_name, count(distinct ID_tblRawParser) AS 'счетчик Р6' FROM tblRawParsers WHERE criteria is 'Р6' GROUP BY file_name;
-# SELECT a.distributor_id,
-#     (SELECT COUNT(*) FROM myTable WHERE level='personal' and distributor_id = a.distributor_id) as PersonalCount,
-#     (SELECT COUNT(*) FROM myTable WHERE level='exec' and distributor_id = a.distributor_id) as ExecCount,
-#     (SELECT COUNT(*) FROM myTable WHERE distributor_id = a.distributor_id) as TotalCount
-# FROM (SELECT DISTINCT distributor_id FROM myTable) a ;
+
+# SELECT m.file_name,
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name) AS 'всего',
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name AND criteria = 'Р1') AS 'P1',
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name AND criteria = 'Р2') AS 'P2',
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name AND criteria = 'Р3') AS 'P3',
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name AND criteria = 'Р4') AS 'P4',
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name AND criteria = 'Р5') AS 'P5',
+# 	   (SELECT count(*) FROM tblRawParsers WHERE file_name=m.file_name AND criteria = 'Р6') AS 'P6'
+# FROM (SELECT DISTINCT file_name FROM tblRawParsers) as m
