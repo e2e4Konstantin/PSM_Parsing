@@ -3,7 +3,7 @@ import os
 from icecream import ic
 import re
 
-from db.sql_queries import create_table, insert_query
+from parcing_psm_db.sql_queries import create_table, insert_query
 from excel_tools import get_data_items_from_excel
 from files_tolls import output_message_exit
 

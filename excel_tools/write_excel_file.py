@@ -3,9 +3,9 @@ from openpyxl.utils.cell import column_index_from_string
 from openpyxl.styles import DEFAULT_FONT
 import openpyxl
 
-from db.get_data_db import get_data_db, get_db_data_with_header, get_statistics_data
+from parcing_psm_db.get_data_db import get_data_db, get_db_data_with_header, get_statistics_data
 from files_tolls import output_message_exit, file_unused
-from db.sql_queries import select_query
+from parcing_psm_db.sql_queries import select_query
 
 
 def _basic_header_output(sheet: worksheet):

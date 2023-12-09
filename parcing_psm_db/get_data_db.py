@@ -1,6 +1,6 @@
 import sqlite3
 
-from db.sql_queries import select_query
+from parcing_psm_db.sql_queries import select_query
 from files_tolls import output_message
 
 
