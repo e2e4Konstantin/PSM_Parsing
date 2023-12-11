@@ -9,7 +9,7 @@ def update_psm_tables(psm_files_path: str, db_file_name: str):
     psm_file_name_mask = r"[^~].*[\d+]((\d+-){4}).*\.xlsx"
     psm_roll = build_files_list_by_mask(psm_files_path, psm_file_name_mask)
     # ic(psm_roll)
-    for psm_file in psm_roll[:2]:
+    for psm_file in psm_roll:
         psm_restore(psm_file, db_file_name)
 
 

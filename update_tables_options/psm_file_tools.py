@@ -2,12 +2,14 @@ from icecream import ic
 from openpyxl.worksheet import worksheet
 from openpyxl import load_workbook, Workbook
 from openpyxl.utils.cell import column_index_from_string
+from openpyxl.styles import Color, Font
+
 import re
 
 from files_tolls import output_message_exit
-from update_tables_options.db_tools import get_db_attributes_for_table
+from update_tables_options.db_attributes import get_db_attributes_for_table
+from update_tables_options.db_options import get_db_options_for_table
 from config import dbTolls
-
 
 
 def get_focus_sheet(wbook: Workbook) -> worksheet:
@@ -48,8 +50,25 @@ def psm_restore(psm_file_name: str, db_name: str):
             ic(psm_file_name, tables)
             with dbTolls(db_name) as db:
                 for table in tables:
-                    att_val = get_db_attributes_for_table(db, table[2])
-                    ic(att_val)
+                    message = []
+                    ic(table)
+                    attributes = get_db_attributes_for_table(db, table[2])
+                    options = get_db_options_for_table(db, table[2])
+
+                    message.extend(sorted(attributes.keys())) if attributes is not None else None
+                    message.extend(sorted(options.keys())) if options is not None else None
+                    # ic(message)
+                    if not message:
+                        break
+                    row = table[0]
+                    column_number = column_index_from_string('H')
+                    changed_string = ', '.join(message)
+                    font = Font(name='Calibri', color=Color(rgb='00CD5C5C'), size=11, bold=True)
+
+                    sheet.cell(row=row, column=column_number).value = changed_string
+                    sheet.cell(row=row, column=column_number).font = font
+                    ic(changed_string)
+                book.save(psm_file_name)
         else:
             output_message_exit(f"В excel файле: {psm_file_name!r}", f"нет страницы 'ОГ'")
         book.close()

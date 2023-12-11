@@ -18,18 +18,18 @@ def get_db_options_for_table(db: dbTolls, table_short_name: str) -> dict[str: tu
     table_id, number_quotes = get_table_id_number_quotes(db, table_short_name)
     if number_quotes is None:
         return None
-
+    # ic(number_quotes)
     options = get_distinct_options_for_table(db, table_id)
     if options is None:
-        output_message(f"в таблице {table_short_name} для всех {number_quotes} расценок",
-                       f"нет ни одного параметра")
+        # output_message(f"в таблице {table_short_name!r} для всех {number_quotes} расценок",
+        #                f"нет ни одного параметра")
         return None
     variable_options = {}
     for option in options:
         options_values = get_values_options_for_table(db, option, table_id)
-        if options_values:
-            variable_options[option] = option
-            ic(option, variable_options[option])
+        if options_values and (len(options_values) < number_quotes or len(set(options_values)) > 1):
+            variable_options[option] = tuple(set(options_values))
+            # ic(option,  variable_options[option])
     return variable_options
 
 
